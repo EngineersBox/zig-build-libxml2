@@ -10,6 +10,7 @@ pub fn build(b: *std.Build) !void {
         .optimize = optimize,
     });
     lib.linkLibC();
+    lib.linkSystemLibrary("iconv");
 
     lib.addIncludePath(b.path("upstream/include/"));
     lib.addIncludePath(b.path("upstream/include"));
