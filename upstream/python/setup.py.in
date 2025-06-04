@@ -5,11 +5,15 @@
 import sys, os
 
 try:
-    import setuptools
+    from setuptools import setup, Extension
 except ImportError:
-    pass
-
-from distutils.core import setup, Extension
+    try:
+        # Using distutils, for python < 3.12
+        from distutils.core import setup, Extension
+    except ImportError:
+        # distutils is not present in python 3.12 and greater
+        print("setuptools is required for python >= 3.12")
+        sys.exit(1)
 
 # Below ROOT, we expect to find include, include/libxml2, lib and bin.
 # On *nix, it is not needed (but should not harm),
@@ -93,8 +97,7 @@ libdirs = [
 os.path.join(ROOT,'lib'),
 ]
 
-xml_files = ["libxml2-api.xml", "libxml2-python-api.xml",
-             "libxml.c", "libxml.py", "libxml_wrap.h", "types.c",
+xml_files = ["libxml.c", "libxml.py", "libxml_wrap.h", "types.c",
              "xmlgenerator.py", "README", "TODO", "drv_libxml2.py"]
 
 xslt_files = ["libxslt-api.xml", "libxslt-python-api.xml",
@@ -111,20 +114,6 @@ if missing("libxml2-py.c") or missing("libxml2.py"):
         print("failed to find and generate stubs for libxml2, aborting ...")
         print(sys.exc_info()[0], sys.exc_info()[1])
         sys.exit(1)
-
-    head = open("libxml.py", "r")
-    generated = open("libxml2class.py", "r")
-    result = open("libxml2.py", "w")
-    for line in head.readlines():
-        if WITHDLLS:
-            result.write(altImport(line))
-        else:
-            result.write(line)
-    for line in generated.readlines():
-        result.write(line)
-    head.close()
-    generated.close()
-    result.close()
 
 with_xslt=0
 if missing("libxslt-py.c") or missing("libxslt.py"):
@@ -259,7 +248,7 @@ setup (name = "libxml2-python",
        author = "Daniel Veillard",
        author_email = "veillard@redhat.com",
        url = "https://gitlab.gnome.org/GNOME/libxml2",
-       licence="MIT Licence",
+       license="MIT License",
        py_modules=modules,
        ext_modules=extens,
        ext_package=ext_package,

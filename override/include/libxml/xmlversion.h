@@ -10,9 +10,11 @@
 // We are not GCC.
 #define XML_IGNORE_FPTR_CAST_WARNINGS
 #define XML_POP_WARNINGS
+#ifdef LIBXML_ATTR_FORMAT
+#undef LIBXML_ATTR_FORMAT
+#endif
 #define LIBXML_ATTR_FORMAT(fmt,args)
 #define LIBXML_ATTR_ALLOC_SIZE(x)
-#define ATTRIBUTE_UNUSED
 #define XML_DEPRECATED
 
 #endif
